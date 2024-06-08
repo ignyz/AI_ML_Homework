@@ -1,0 +1,32 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "AI_ML_Homework"
+version = "0.0.1"
+description = "API IOCs tool"
+authors = ["Your Name <your.email@example.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+base58 = "*"
+beautifulsoup4 = "*"
+bech32 = "*"
+cashaddress = "*"
+cbor = "*"
+eth-hash = "*"
+pycryptodome = "*"
+intervaltree = "*"
+langdetect = "*"
+lxml = "*"
+phonenumbers = "*"
+python-magic = "*"
+readabilipy = "*"
+fastapi = "*"
+libmagic = "*"
+
+[tool.poetry.dev-dependencies]
+# Dependencies here
+

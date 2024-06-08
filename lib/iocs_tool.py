@@ -1,11 +1,16 @@
 import iocsearcher
 from iocsearcher.searcher import Searcher
+from pydantic import BaseModel
+from iocsearcher.document import open_document
 
 class IOCTool:
     # Class used tools are implemented using iocsearcher tool documentation: https://github.com/malicialab/iocsearcher
     def __init__(self):
         self.iocs = []
+
     def dict_format(self, input_string):
+        # IOC results formatting method
+        # used only for managing sets of data
         # Remove '{', '}'
         input_string = input_string.strip('{}')
         # Split the string into key-value pairs separated by comma and whitespace
@@ -22,14 +27,14 @@ class IOCTool:
 
         # Format extracted IOCs
         for row in results:
-            row_dict = self.dict_format(str(row))
             # And append to IOCs list
-            for key, val in row_dict.items():
-                self.iocs.append((val, key.upper(), self.calculate_confidence(val)))
+            self.iocs.append((row[0], row[1], row[2]))
+        return self.iocs
+    def extract_doc_iocs(self, file):
+        doc = open_document("file.pdf")
+        text, _ = doc.get_text() if doc is not None else ""
 
-    def calculate_confidence(self, ioc):
-        # Confidence calculation
-        return 1.0
-
+        searcher = Searcher()
+        searcher.search_data(text)
     def get_iocs(self):
         return self.iocs
