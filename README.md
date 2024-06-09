@@ -4,10 +4,10 @@ This tool is designed to extract IoCs from various text sources, identifying IP 
 
 ## Features
 
-- Extraction of IoCs from diverse text sources (`pdf, csv, xls, docx, txt, csv, html`)
-- Identification of IoC types: IP addresses, domain names, URLs, file hashes, and email addresses.
-- Output generation with IoC, type, and confidentiality score.
-- `[Optional]` user interface with input and output windows.
+- [x] Extraction of IoCs from diverse text sources (`pdf, csv, xls, docx, txt, csv, html`).
+- [x] Identification of IoC types: IP addresses, domain names, URLs, file hashes, and email addresses.
+- [x] Output generation with IoC, type, and confidentiality score.
+- [ ] [Optional] User interface with input and output windows.
 
 ## Full Task:
 Create a tool that can extract Indicators of Compromise (IoCs) from various text sources, such as emails, security reports, and threat intelligence feeds. The extracted IoCs should include IP addresses, domain names, URLs, file hashes, and email addresses. Output at least should have IoC, type of IoC and confidentiality score.
