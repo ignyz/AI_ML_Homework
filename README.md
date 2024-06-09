@@ -16,7 +16,7 @@ End result depends on your knowledge and varies from a blueprint to a full-stack
 
 ## Credits
 
-This tool was developed by Ignas Narušis.
+This tool was developed with help of sources below and by Ignas Narušis.
 
 ### Source list
 - https://github.com/InQuest/iocextract
