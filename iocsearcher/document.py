@@ -20,6 +20,7 @@ from email import policy, message_from_bytes
 from email.parser import BytesParser
 import magic
 import pandas as pd
+import hashlib
 
 # Set logging
 log = logging.getLogger(__name__)
@@ -124,14 +125,19 @@ def open_document_bn(file, doc_content, create_ioc_fun=None):
     elif mime_type in ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel']:
         return read_excel(BytesIO(doc_content))
     elif mime_type == 'application/x-msdownload':
-        decoded_strings = ""  # Initialize an empty list to store decoded strings
-        for chunk in doc_content.split(b'\0'):  # Split the content by null bytes
-            try:
-                decoded_string = chunk.decode('utf-8', 'ignore')  # Decode the chunk into a string, ignoring errors
-                if decoded_string  != "":
-                    decoded_strings += decoded_string   # Add the decoded string to the list
-            except Exception as e:
-                log.warning("Could not decode document content: %s" % str(e))
+        decoded_strings = ""
+        try:
+            md5_hash = hashlib.md5(BytesIO(doc_content).read()).hexdigest()
+            decoded_strings += md5_hash + "\n"
+        except Exception as e:
+            print(str(e)) # Initialize an empty list to store decoded strings
+        # for chunk in doc_content.split(b'\0'):  # Split the content by null bytes
+        #     try:
+        #         decoded_string = chunk.decode('utf-8', 'ignore')  # Decode the chunk into a string, ignoring errors
+        #         if decoded_string  != "":
+        #             decoded_strings += decoded_string   # Add the decoded string to the list
+        #     except Exception as e:
+        #         log.warning("Could not decode document content: %s" % str(e))
         return decoded_strings
     else:
         log.warning("Unsupported MIME type %s for %s" % (mime_type, file))

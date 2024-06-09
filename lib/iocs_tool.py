@@ -1,3 +1,5 @@
+import requests
+
 import iocsearcher
 from iocsearcher.searcher import Searcher
 from pydantic import BaseModel
@@ -36,10 +38,8 @@ class IOCTool:
 
         elif ioc_type in ['md5', 'sha1', 'sha256']:
             # File hashes indicating known malware may pose a higher risk
-            if ioc in "known_malware_hashes":
-                score += 10
-            else:
-                score += 1
+            # Make API request
+            score = self.malware_call(ioc, score)
 
         elif ioc_type == 'email':
             # Email addresses associated with known phishing campaigns or threat actors might be more sensitive
@@ -48,6 +48,35 @@ class IOCTool:
             else:
                 score += 1
 
+        return score
+
+    def malware_call(self, ioc, score):
+        data = {
+            "query": "get_info",
+            "hash": ioc,
+            # "apikey": '4615ebf4ffbee0a4fd953d941c38f6b0'
+        }
+        response = requests.post("https://mb-api.abuse.ch/api/v1/", data=data)
+        # Check if request was successful
+        if response.status_code == 200:
+            # Parse response JSON
+            data = response.json()
+
+            # Check if file exists in Malware Bazaar's database
+            if data["query_status"] == "ok":
+                result = str(data["data"])
+                try:
+                    if "malicious" in result.lower():
+                        score += 10
+                    else:
+                        print("File is not found in Malware Bazaar's database.")
+                except Exception as e:
+                    print(str(e))
+
+            else:
+                print("Query status is not ok:", data["query_status"])
+        else:
+            print("Error:", response.status_code)
         return score
 
     def dict_format(self, input_string):
