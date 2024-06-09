@@ -13,18 +13,31 @@ from iteration_utilities import unique_everseen
 app = FastAPI()
 
 class IOCs(BaseModel):
-    ioc: str
+    """
+    Model representing an Indicator of Compromise (IOC).
+    """
     type: str
+    ioc: str
     confidentiality_score: float
 
 @app.post("/extract_iocs_from_text/", response_model=List[IOCs])
 async def extract_iocs_from_text(text: str):
+    """
+    Endpoint to extract IOCs from a text string.
+
+    Parameters:
+        text (str): Text to extract IOCs from.
+
+    Returns:
+        List[IOCs]: List of extracted IOCs.
+    """
     iocs = []
     extractor = IOCTool()
 
     # Extract IOCs from text
     extracted_iocs = extractor.extract_iocs(text)
 
+    # Convert extracted IOCs to IOCs objects
     for ioc in extracted_iocs:
         iocs.append(IOCs(ioc=ioc[0], type=ioc[1], confidentiality_score=ioc[2]))
 
@@ -32,18 +45,32 @@ async def extract_iocs_from_text(text: str):
 
 @app.post("/extract_doc_iocs/", response_model=List[IOCs])
 async def extract_doc_iocs(file: UploadFile = File(...)):
+    """
+    Endpoint to extract IOCs from a document file.
+
+    Parameters:
+        file (UploadFile): Document file to extract IOCs from.
+
+    Returns:
+        List[IOCs]: List of extracted IOCs.
+    """
     iocs = []
+
+    # Read document content
     doc_content = await file.read()
     try:
+
+        # Extract text from document
         text = open_document_bn(file, doc_content)
         # Extract IOCs from text
         extractor = IOCTool()
         extracted_iocs = extractor.extract_iocs(text)
 
+        # Convert extracted IOCs to IOCs objects
         for ioc in extracted_iocs:
             iocs.append(IOCs(ioc=ioc[0], type=ioc[1], confidentiality_score=ioc[2]))
 
-        # remove duplicates
+        # Remove duplicates
         iocs = list(unique_everseen(iocs))
         return iocs
 
