@@ -7,6 +7,7 @@ import logging
 from io import BytesIO
 
 import PyPDF2
+from bs4 import BeautifulSoup
 
 from pptx import Presentation
 from docx import Document as DocxDocument
@@ -74,7 +75,11 @@ def read_word_doc(byte_stream):
     for para in doc.paragraphs:
         content.append(para.text)
     return "\n".join(content)
-
+def extract_text_from_html(html_file):
+    soup = BeautifulSoup(html_file.decode('utf-8'), "lxml")
+    # Extract text from all elements
+    text = soup.get_text(separator="\n", strip=True)
+    return text
 def read_excel(byte_stream):
     # Assuming the Excel file has the first sheet as the target
     df = pd.read_excel(byte_stream)
@@ -98,13 +103,11 @@ def open_document_bn(file, doc_content, create_ioc_fun=None):
             raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
     elif ((mime_type == "text/html") or
           (mime_type == "text/xml")):
-          doc = ExtendedHtml(file, mime_type=mime_type,
-                              create_ioc_fun=create_ioc_fun)
+          doc = extract_text_from_html(doc_content)
     elif ((tokens[0] == "text") or
         (mime_type == "application/csv") or
         (mime_type == "application/json")):
         doc = doc_content.decode('utf-8')
-        # doc = Document(file, mime_type=mime_type)
     elif mime_type == "message/rfc822":
         # Parse the email message from the BytesIO stream
         msg = message_from_bytes(doc_content)
@@ -113,9 +116,6 @@ def open_document_bn(file, doc_content, create_ioc_fun=None):
         print("From:", msg['from'])
         print("To:", msg['to'])
         print("Date:", msg['date'])
-        # Print the email body (if it's a simple email)
-        attachments = msg.get_payload()
-        print(msg.get_payload()[1])
         return str(msg)
     elif mime_type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation':
         return read_presentation(BytesIO(doc_content))
@@ -132,7 +132,6 @@ def open_document_bn(file, doc_content, create_ioc_fun=None):
                     decoded_strings += decoded_string   # Add the decoded string to the list
             except Exception as e:
                 log.warning("Could not decode document content: %s" % str(e))
-        # strings = [s.decode('utf-8', 'ignore') for s in doc_content.split(b'\0') if s.isprintable()]
         return decoded_strings
     else:
         log.warning("Unsupported MIME type %s for %s" % (mime_type, file))
