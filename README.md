@@ -4,7 +4,7 @@ This tool is designed to extract IoCs from various text sources, identifying IP 
 
 ## Features
 
-- [x] Extraction of IoCs from diverse text sources (`pdf, csv, xls, docx, txt, csv, html`).
+- [x] Extraction of IoCs from diverse text sources (`pdf, csv, xls, docx, txt, csv, html, exe files`).
 - [x] Identification of IoC types: IP addresses, domain names, URLs, file hashes, and email addresses.
 - [x] Output generation with IoC, type, and confidentiality score.
 - [ ] [Optional] User interface with input and output windows.
